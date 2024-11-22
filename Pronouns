@@ -1,0 +1,39 @@
+# Function to check for first person pronoun (FPP1)
+def check_first_person_pronoun(sentence):
+    first_person_pronouns = ['میں', 'ہم']
+    
+    for pronoun in first_person_pronouns:
+        if re.search(r'\b' + re.escape(pronoun) + r'\b', sentence):
+            return re.sub(r'\b' + re.escape(pronoun) + r'\b', f'{pronoun}_(FPP1)', sentence)
+    
+    return None
+
+# Function to check for second person pronoun (SPP2)
+def check_second_person_pronoun(sentence):
+    second_person_pronouns = ['تو', 'تُسیں']
+    
+    for pronoun in second_person_pronouns:
+        if re.search(r'\b' + re.escape(pronoun) + r'\ب', sentence):
+            return re.sub(r'\b' + re.escape(pronoun) + r'\ب', f'{pronoun}_(SPP2)', sentence)
+    
+    return None
+
+# Function to check for third person pronoun (TPP3)
+def check_third_person_pronoun(sentence):
+    third_person_pronouns = ['او', 'اوناں']
+    
+    for pronoun in third_person_pronouns:
+        if re.search(r'\ب' + re.escape(pronoun) + r'\ب', sentence):
+            return re.sub(r'\ب' + re.escape(pronoun) + r'\ب', f'{pronoun}_(TPP3)', sentence)
+    
+    return None
+
+# Function to check for demonstrative pronoun (DEMP)
+def check_demonstrative_pronoun(sentence):
+    demonstrative_pronouns = ['یہ', 'وہ']
+    
+    for pronoun in demonstrative_pronouns:
+        if re.search(r'\ب' + re.escape(pronoun) + r'\ب', sentence):
+            return re.sub(r'\ب' + re.escape(pronoun) + r'\ب', f'{pronoun}_(DEMP)', sentence)
+    
+    return None
