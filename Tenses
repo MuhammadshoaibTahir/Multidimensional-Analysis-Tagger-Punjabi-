@@ -1,0 +1,59 @@
+# Function to check for present indefinite tense (VPRT)
+def check_present_indefinite(sentence):
+    present_indefinite_patterns = [
+        r'\bکردا\sاے\b', r'\bکر\sرہیا\sاے\b',  # Add more patterns as needed
+    ]
+    
+    for pattern in present_indefinite_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(VPRT)'
+    
+    return None
+
+# Function to check for past indefinite tense (VBD)
+def check_past_indefinite(sentence):
+    past_indefinite_patterns = [
+        r'\bکیا\b', r'\bکر\sرہیا\sسی\b',  # Add more patterns as needed
+    ]
+    
+    for pattern in past_indefinite_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(VBD)'
+    
+    return None
+
+# Function to check for present continuous tense (VPRT)
+def check_present_continuous(sentence):
+    present_continuous_patterns = [
+        r'\bرہیا\sاے\b', r'\bرہی\sاے\b',  # Add more patterns as needed
+    ]
+    
+    for pattern in present_continuous_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(VPRT)'
+    
+    return None
+
+# Function to check for past continuous tense (VBD)
+def check_past_continuous(sentence):
+    past_continuous_patterns = [
+        r'\bرہیا\sسی\b', r'\bرہی\sسی\b', r'\bرئے\sسن\b', r'\bدیا\sسی\b', r'\بپیا\sسی\b',  # Add more patterns as needed
+    ]
+    
+    for pattern in past_continuous_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(VBD)'
+    
+    return None
+
+# Function to check for past perfect tense (VBD)
+def check_past_perfect(sentence):
+    past_perfect_patterns = [
+        r'\بکردا\sسی\b',  # Add more patterns as needed
+    ]
+    
+    for pattern in past_perfect_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(VBD)'
+    
+    return None
