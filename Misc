@@ -1,0 +1,699 @@
+# Function to check for infinitives (TO)
+def check_infinitives(sentence):
+    infinitives = [
+        'کرنا', 'دینا', 'پینا'
+    ]
+    
+    for infinitive in infinitives:
+        if re.search(r'\ب' + re.escape(infinitive) + r'\ب', sentence):
+            return re.sub(r'\ب' + re.escape(infinitive) + r'\ب', f'{infinitive}_(TO)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for place adverbials (PLACE)
+def check_place_adverbials(sentence):
+    place_adverbials = [
+        'اتے', 'اتاں', 'باہر', 'باہروں', 'آر پار', 'نال نال', 'آسے پاسے', 'آلے دو آلے', 'پچھے', 'پچھاں', 'دور', 'واڈھ', 'دوروں', 'تھلے', 'تھلے ول', 'اتے ول', 'زمین دے وچ', 'نیڑے', 'نیڑے توں', 'کتھے نہیں'
+    ]
+    
+    for adverbial in place_adverbials:
+        if re.search(r'\ب' + re.escape(adverbial) + r'\ب', sentence):
+            return re.sub(r'\ب' + re.escape(adverbial) + r'\ب', f'{adverbial}_(PLACE)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for time adverbials (TIME)
+def check_time_adverbials(sentence):
+    time_adverbials = [
+        'سبھ توں پہلاں', 'پہلاں', 'توں پہلاں', 'دوبارہ', 'مڑ', 'فیر', 'توں بعد', 'اس پچھوں', 'بعد اچ'
+    ]
+    
+    for adverbial in time_adverbials:
+        if re.search(r'\ب' + re.escape(adverbial) + r'\ب', sentence):
+            return re.sub(r'\ب' + re.escape(adverbial) + r'\ب', f'{adverbial}_(TIME)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for hedges (HDG)
+def check_hedges(sentence):
+    hedges_structures = [
+        r'\بہوسکدا\sاے\b',  # Structure 1: ہوسکدا اے
+        r'\باندازا\b', r'\باندازاً\b', r'\باَنْدازاً\b',  # Structure 1: اندازا, اندازاً, اَنْدازاً
+        r'\بکجھ\sایہو\b', r'\بجیہا\b', r'\بکجھ\sایہو\b', r'\بجئے\b',  # Structure 1: کجھ ایہو, جیہا, کجھ ایہو, جئے
+        r'\بگھٹ\sوچھ\b',  # Structure 1: گھٹ وچ
+        
+        # Structure 2: when تقریبا follows or preceded by the numeric
+        r'\بتقریبا\sاک\b', r'\بتقریبا\sدو\b', r'\بتقریبا\sتین\b', r'\بتقریبا\sچار\b', r'\بتقریبا\sپنج\b',
+        r'\بتقریبا\sچھ\b', r'\بتقریبا\sست\b', r'\بتقریبا\sاٹھ\b', r'\بتقریبا\sنو\b', r'\بتقریبا\sدس\b',
+        r'\بتقریبا\sگیارہ\b', r'\بتقریبا\sبارہ\b', r'\بتقریبا\sتیرہ\b', r'\بتقریبا\sچودہ\b',
+        r'\بتقریبا\sپندرہ\b', r'\بتقریبا\sسولا\b', r'\بتقریبا\sسترہ\b', r'\بتقریبا\sاٹھارہ\b'
+    ]
+    
+    for hedge_pattern in hedges_structures:
+        if re.search(hedge_pattern, sentence):
+            return re.sub(hedge_pattern, r'\گ<0>_(HDG)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for pro verb do (PROD)
+def check_pro_verb_do(sentence):
+    pro_verb_do_patterns = [
+        r'\ب(\و+)\س(گیا)\ب', r'\ب(\و+)\س(ہویا)\ب', r'\ب(\و+)\س(کیتا)\ب', r'\ب(\و+)\س(دتا)\ب', 
+        r'\ب(ہاں)\س(گیا)\ب', r'\ب(ہاں)\س(ہویا)\ب', r'\ب(ہاں)\س(کیتا)\ب', r'\ب(ہاں)\س(دتا)\ب',
+        r'\ب(ہاں)\س(او)\ب', r'\ب(ہاں)\س(چل)\ب', r'\ب(ہاں)\س(آ)\ب', r'\ب(ہاں)\س(ویچ)\ب',
+        r'\ب(وی)\س(گیا)\ب', r'\ب(وی)\س(ہویا)\ب', r'\ب(وی)\س(کیتا)\ب', r'\ب(وی)\س(دتا)\ب',
+        r'\ب(وی)\س(چل)\ب', r'\ب(وی)\س(آ)\ب', r'\ب(وی)\س(او)\ب', r'\ب(وی)\س(آ)\ب',
+        r'\ب(وی)\س(ویچ)\ب'
+    ]
+    
+    for pro_verb_do_pattern in pro_verb_do_patterns:
+        if re.search(pro_verb_do_pattern, sentence):
+            return re.sub(pro_verb_do_pattern, r'\گ<0>_(PROD)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for verb complement (THVC)
+def check_verb_complement(sentence):
+    verb_complement_patterns = [
+        r'\ب(\س+)\س(نہ)\س(سمجھ)\س(پایا)\ب', r'\ب(\س+)\س(نہ)\س(سمجھ)\س(آ)\س(وے)\ب', 
+        r'\ب(\س+)\س(نہ)\س(سمجھ)\س(گے)\ب', r'\ب(\س+)\س(نہ)\س(سمجھ)\س(لگ)\ب', 
+        r'\ب(پھر)\س(پِھریں)\س(لگ)\س(گیا)\ب', r'\ب(پھر)\س(پِھریں)\س(لگ)\س(گیا)\ب', 
+        r'\ب(پھر)\س(لگ)\س(گیا)\س(گیا)\ب', r'\ب(پھر)\س(لگ)\س(گیا)\س(گیا)\ب'
+    ]
+    
+    for verb_complement_pattern in verb_complement_patterns:
+        if re.search(verb_complement_pattern, sentence):
+            return re.sub(verb_complement_pattern, r'\گ<0>_(THVC)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for adjective complement (THAC)
+def check_adjective_complement(sentence):
+    adjective_complement_patterns = [
+        r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\ب', r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(واہ)\ب',
+        r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(ان)\س(جا)\ب', r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(خ)\ب',
+        r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(ای)\س(ہا)\ب', r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(ن)\س(ہویا)\ب',
+        r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(پ)\س(لگ)\ب', r'\ب(ہم)\س(نے)\س(آ)\س(کہ)\س(تھیا)\س(ن)\س(گ)\ب'
+    ]
+    
+    for adjective_complement_pattern in adjective_complement_patterns:
+        if re.search(adjective_complement_pattern, sentence):
+            return re.sub(adjective_complement_pattern, r'\گ<0>_(THAC)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for WH questions (WHQU)
+def check_wh_questions(sentence):
+    wh_question_patterns = [
+        r'\ب(کی)\ب', r'\ب(کیا)\ب', r'\ب(کون)\ب', r'\ب(کس)\ب', r'\ب(کس نے)\ب',
+        r'\ب(کس دی)\ب', r'\ب(کس دا)\ب', r'\ب(کس نوں)\ب', r'\ب(کون ہے)\ب', r'\ب(کس ہے)\ب',
+        r'\ب(کیہڑا)\ب', r'\ب(کتھے)\ب', r'\ب(کدوں)\ب', r'\ب(کتھاں)\ب', r'\ب(کدے)\ب',
+        r'\ب(کیوں)\ب', r'\ب(کیویں)\ب', r'\ب(کس طرح)\ب'
+    ]
+    
+    for wh_question_pattern in wh_question_patterns:
+        if re.search(wh_question_pattern, sentence):
+            return re.sub(wh_question_pattern, r'\گ<0>_(WHQU)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for Wh clause on subject position (WHSUB)
+def check_wh_subj(sentence):
+    wh_subj_patterns = [
+        r'\ب(کس نے)\ب', r'\ب(کون)\ب', r'\ب(کیہڑا)\ب', r'\ب(کس دا)\ب', r'\ب(کیا)\ب'
+    ]
+    
+    for wh_subj_pattern in wh_subj_patterns:
+        if re.search(wh_subj_pattern, sentence):
+            return re.sub(wh_subj_pattern, r'\گ<0>_(WHSUB)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+# Function to check for Wh clause on object position (WHOBJ)
+def check_wh_obj(sentence):
+    wh_obj_patterns = [
+        r'\ب(کس نے)\ب', r'\ب(کون)\ب', r'\ب(کہ)\ب', r'\ب(کدوں)\ب', r'\ب(جدوں)\ب',
+        r'\ب(کتھاں)\ب', r'\ب(کدے)\ب', r'\ب(کتھے)\ب', r'\ب(کیوں)\ب'
+    ]
+    
+    for wh_obj_pattern in wh_obj_patterns:
+        if re.search(wh_obj_pattern, sentence):
+            return re.sub(wh_obj_pattern, r'\گ<0>_(WHOBJ)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+
+# Function to check for predictive model tags (PRMD)
+def check_predictive_model(sentence):
+    predictive_model_patterns = [
+        r'\b(کرسکدا)\s(اے)\b', r'\b(سکدا)\s(اے)\b', r'\b(سکدے)\b', r'\b(کرسکدا)\s(سی)\b', r'\b(سکدے)\s(سن)\b'
+    ]
+    
+    for pattern in predictive_model_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(PRMD)', sentence)
+    
+    return None
+
+# Function to check for downtoners tags (DWNT)
+def check_downtoners(sentence):
+    downtoners_patterns = [
+        r'\b(تقریبا)\b', r'\b(شاید)\b', r'\b(مشکل نال)\b', r'\b(لگ بھگ)\b', r'\b(کجھ حد تک)\b', r'\b(تھوڑا جیہا)\b'
+    ]
+    
+    for pattern in downtoners_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(DWNT)', sentence)
+    
+    return None
+
+
+
+# Function to check for emphatics tags (EMPH)
+def check_emphatics(sentence):
+    emphatics_patterns = [
+        # بلکل
+        r'\b(انج\s+بلکل)\b',  # Just like this or that
+        r'\b(ہی\s+بلکل)\b',    # Completely
+        r'\b(ای\s+بلکل)\b',    # Completely
+        
+        # سارا, پورا, مکمل
+        r'\b(سارا)\b',         # Completely
+        r'\b(پورا)\b',         # Emphatics if not following a verb
+        r'\b(مکمل)\b',         # Emphatics
+        
+        # یقینا
+        r'\b(یقینا)\b',        # Emphatics
+        
+        # سچی
+        r'\b(سچی\s+سچی)\b',   # Emphatics
+        r'\b(سچی)\b',          # Emphatics
+        
+        # سچی مچی
+        r'\b(سچی\s+مچی)\b',   # Emphatics
+        
+        # پکی گل اے
+        r'\b(پکی\s+گل\s+اے)\b', # Emphatics
+        
+        # ہاں ہاں
+        r'\b(ہاں\s+ہاں)\b',   # Emphatics
+        
+        # بے شک
+        r'\b(بے\s+شک)\b',      # Emphatics
+        
+        # ایہا تاں
+        r'\b(ایہا\s+تاں)\b',   # Emphatics
+        
+        # صاف صاف
+        r'\b(صاف\s+صاف)\b',   # Emphatics
+        
+        # ظاہری گل اے
+        r'\b(ظاہری\s+گل\s+اے)\b', # Emphatics
+        
+        # پکا
+        r'\b(پکا)\b'           # Emphatics if following a verb
+    ]
+    
+    for pattern in emphatics_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(EMPH)', sentence)
+    
+    return None
+
+
+# Function to check for Model of Necessity (NEMD)
+def check_model_of_necessity(sentence):
+    model_of_necessity_patterns = [
+        r'\چاہیدا\sاے\b', r'\چاہیدا\sاو\b', r'\چاہیدا\sنیں\b',  # 1st structure
+        r'\چاہیدا\sسی\b', r'\چاہیدا\sسن\b',
+        r'\چاہیدا\sضرور\b',  # Additional pattern for ضرور
+    ]
+    
+    for pattern in model_of_necessity_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(NEMD)'
+    
+    return None
+
+
+# Function to check for Model of Possibility (POMD)
+def check_model_of_possibility(sentence):
+    model_of_possibility_patterns = [
+        r'\bہوسکدا\sاے\b', r'\bہوسکدی\sاے\b', r'\bہوسکدے\sاے\b',
+    ]
+    
+    for pattern in model_of_possibility_patterns:
+        if re.search(pattern, sentence):
+            return sentence.strip() + '_(POMD)'
+    
+    return None
+
+# Function to check for discourse particles (DPAR)
+def check_discourse_particles(sentence):
+    discourse_particle_patterns = [
+        r'\b(اچھا)\b', r'\b(بھلے\sہی)\b', r'\b(ہن)\b',  # Single word discourse particles
+        r'\b(چلو)\b', r'\b(کوئی\sگل\sنئی)\b', r'\b(کوئی\sگل\sنہیں)\b'  # Start of sentence discourse particles
+    ]
+    
+    for pattern in discourse_particle_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(DPAR)', sentence)
+    
+    return None
+
+# Function to check for Coordinate conjunctions (PHC)
+def check_coordinate_conjunctions(sentence):
+    coordinate_conjunction_patterns = [
+        r'\b(اس\sلئی)\b', r'\b(نہ\sہی)\b', r'\b(لیکن)\b', r'\b(پر)\b', r'\b(تے)\b', r'\b(تاں)\b', r'\b(اجے\sتک)\b',
+        r'\b(اجے\sتک)(?=.*\?)',  # اجے تک as "yet" after interrogative sentence
+        r'\b(نہیں|نئی)\s+(.*\s+)?اجے\sتک\b',  # اجے تک as "yet" after negation
+    ]
+    
+    for pattern in coordinate_conjunction_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(PHC)', sentence)
+    
+    return None
+
+
+# Function to check for Conjuncts (CONJ)
+def check_conjuncts(sentence):
+    conjunct_patterns = [
+        r'\b(الٹا)\b(?!\s+نے\s+)',  # الٹا as conjunct, not following verb نے
+        r'\b(جیویں)\b',  # جیویں as conjunct
+        r'\b(ایس\sپاروں)\b',  # ایس پاروں as conjunct
+        r'\b(بلکہ|اس\sتوں\sبعد|ایس\sطرحاں|ایس\sنالوں|اس\sلئی|نہیں\sتاں|نہیں\sتے)\b',  # Various conjuncts
+        r'\b(ہور)\b(?!.*\b(نواز|چودھری|سردار|مکین))',  # ہور as conjunct, not preceding specific nouns/pronouns
+    ]
+    
+    for pattern in conjunct_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(CONJ)', sentence)
+    
+    return None
+
+# Function to check for Conditional adverbial subordinators (COND)
+def check_conditional_subordinators(sentence):
+    cond_patterns = [
+        r'\b(جے)\b(?!\s*کیوں\b)',  # جے as conditional subordinate, not preceded by کیوں
+        r'\b(کیوں\s*جے)\b',  # کیوں جے as a different entity
+        r'\b(جدوں\sتک)\b',  # جدوں تک as conditional subordinate
+    ]
+    
+    for pattern in cond_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(COND)', sentence)
+    
+    return None
+
+def check_predictive_adjective(sentence):
+    pred_adj_pattern = r'\b(\S+)\s+(\S+)\s+(اے)\b'  # Pattern for predictive adjective
+    if re.search(pred_adj_pattern, sentence):
+        return re.sub(pred_adj_pattern, r'\1_\2_(PRED)', sentence)
+    return None
+
+def check_seem_appear(sentence):
+    seem_appear_patterns = [
+        r'\b(ظاہر)\b', r'\b(یو)\b', r'\b(یور)\b',  # Add more patterns as needed
+    ]
+    
+    for pattern in seem_appear_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(SAPR)', sentence)
+    
+    return None
+
+
+def tag_words_as_vb(sentence):
+    # Specific words to be tagged as RB
+    words_to_tag = r'ودھ|ودھدے|ودھدی|ودھدیاں|ودھیا|ودھن|ودھنا|ودھا|ودھ|اٹھ|اڈ|آ|بچ|بدل|بک|بلا|بن|بھر|بھل|پاڑ|پا|پج|پڑھ|پھڑ|پی|تر|ٹٹ|ٹور|ٹیک|جا|جاگ|جت|چڑھ|چک|چگ|چل|دی|دس|ڈٹ|ڈگ|رک|رکھ|رل|رہ|روک|رو|سن|سوچ|کٹ|کر|کہ|کھا|کھو|گوا|لٹک|لڑ|لک|لے|مٹ|مر|مڑ|مک|ملا|نچڑ|ہس|ہلا|وٹ|وڑ|وک|ویچ|اکھ|اتر|اٹھ|اجڑ|اچھل|اڈ|اڈیک|اکتا|اکسا|اکھاڑ|اگ|اگل|الٹ|الجھ|ابھر|اپڑ|اپنا|اٹک|اچھال|اڑ|الٹ|اوڑھ|آکڑ|بڑبڑا|بلا|بکھر|بٹھا|بجھا|بچا|بدل|بڑھ|بس|بک|بکھیر|بگھو|بلا|بنا|بندھ|بنھ|بہا|بھل|بھن|بھٹک|بھر|بھگت|بھونک|بول|بوندل|بیاہ|بیٹھ|پٹ|پھوک|پوج|پاٹ|پال|پا|پرت|پرکھ|پڑھ|پکار|پکا|پکڑ|پگھل|پلا|پہنچ|پہن|پھٹ|پھر|پھڑ|پھس|پھیر|پھیل|پٹ|پونجھ|تر|تلک|تڑف|تک|تھک|توڑ|تول|تیر|ٹپ|ٹٹ|ٹر|ٹکر|ٹک|ٹل|ٹہل|ٹھاو|ٹھپ|ٹھٹ|ٹھر|ٹھکرا|ٹھل|ٹھہر|ٹھوک|ٹوک|جڑ|جاچ|جاگ|جا|جانچ|جان|جاوڑ|جاگ|جل|جم|جھک|جھاڑ|جھاک|جھٹک|جھگڑ|جھل|چھپ|چھڈ|چک|چاڑ|چاہ|چٹر|چٹ|چڑھ|چگ|چل|چمبڑ|چمک|چم|چھاپ|چھا|چیر|چیک|خرید|دس|دفنا|دکھا|دلا|دھڑک|دھکیل|دوڑ|دھو|دیکھ|دے|ڈگ|ڈانٹ|ڈرا|ڈس|ڈک|ڈل|ڈھل|ڈبو|ڈول|رچ|رڑک|رڑھ|رکھ|رک|رل|رہ|روڑ|روک|رے|رینگ|سٹ|سڑ|سکھ|سنبھال|سوچ|سو|سی|کت|کٹ|کچل|کڈھ|کر|کہ|کھا|کھچ|کھڑک|کھسک|کھلو|کھوج|کھول|کھو|کھیڈ|گڈ|گھٹ|گھسیٹ|گھل|گھم|گھول|گوا|گونج|لبھ|لجا|لد|لڑ|لک|لکھ|لگ|لیا|مار|مچل|مر|مڑ|مک|مل|منگ|من|نکل|نہا|ہو|واڑ|وج|وچھ|ودھ|وڈ|وڑ|وس|وک|وگڑ|ول|ونڈ|ویچ|ویکھ|اڈ|ابل|ابھر|اتر|اٹھ|اجڑ|اچھل|اڑ|اکھڑ|اگل|اگ|الجھ|اونگھ|ابال|اپڑ|اپنا|اٹک|چک|اڈیک|اکسا|اکھاڑ|اکھوا|اگھڑ|امڈ|آکڑ|آکھ|بجھا|بیٹھ|بجھ|بڑبڑ|بڑھک|بھر|بھل|بھوک|بٹھاؤ|بک|بگڑ|بلک|بنس|بھ|بیج|بال|باہ|بتاو|بٹ|بٹھا|بجاؤ|بچ|بچھ|بخش|بدل|بڑ|برس|بڑک|بسک|بس|بکھر|بگھار|بگھو|بل|ب|بنھاؤ|بنھ|بنا|بندھ|بہک|بہ|بھڑک|بھک|بھگت|بھج|بھیو|بھاگ|بھال|بھا|بھانپ|بھاو|بھپ|بھٹر|بھٹکا|بھٹک|بھرم|بھڑ|بھیج|بول|بیاہ|بیت|بیڑ|پچھتاو|پرکھ|پھٹ|پھڑک|پھس|پیٹھ|پڑ|پکار|پن|پوج|پور|پونجھ|پڑاؤ|پس|پگھل|پلاؤ|پنج|پھر|پھینٹ|پی|پاٹ|پاڑ|پال|پتھ|پتھراؤ|پٹخ|پٹک|پج|پچکار|پچ|پچھ|پچھاتا|پچھاڑ|پچھا|پچھتا|پچھڑ|پدھار|پرچ|پرت|پرچار|پرس|پرگٹاؤ|پرگٹ|پروس|پرو|پڑتال|پڑچول|پڑدا|پڑھا|پڑھ|پسر|پک|پکڑ|پلا|پلٹ|پلچ|پل|پلوس|پہنچ|پہچا|پہ|پھیل|پھدک|پھل|پھنڈ|پھسل|پھاٹ|پھاڈ|پھاڑ|پھاہ|پھب|پھٹنا|پھرک|پھرول|پھڑ|پھڑ|پھک|پھوک|پھول|پھیر|پھی|پھیہ|پواؤ|پوس|پو|پونج|پوہنچ|پیچ|پیڑ|پیو|تر|تل|تٹھ|تڑک|تن|تھڑک|تھڑ|تو|تڑ|تلک|تنگھ|تار|تاڑ|تاک|تانگھ|تپ|تجر|تراش|تراہ|تراؤ|ترس|تڑپ|تڑف|تک|تھک|تھاپڑ|تھپ|تھپک|تھتھلا|تھٹر|تھرک|تھل|تھم|تھوپ|تھیو|تور|توڑ|توک|تیاگ|تیر|تیک|ٹر|ٹک|ٹانک|ٹپک|ٹٹ|ٹکرا|ٹکر|ٹل|ٹمٹما|ٹنگ|ٹہل|ٹھک|ٹھلھ|ٹھار|ٹھا|ٹھپ|ٹھٹ|ٹھٹھر|ٹھر|ٹھکرا|ٹھکور|ٹھگ|ٹھل|ٹھنک|ٹھہر|ٹھوک|ٹور|ٹوک|ٹول|ٹوہ|جت|جٹ|جڑ|جد|جیو|جاپ|جاس|جال|جا|جانچ|جپ|جچ|جر|جکڑ|جک|جگ|جگا|جل|جم|ج|جھر|جھک|جھلاؤنا|جھلس|جھڑک|جھاڑ|جھاک|جھاگ|جھانک|جھپک|جھٹ|جھٹک|جھٹلا|جھجک|جھڑپ|جھڑ|جھس|جھگڑ|جھل|جھلک|جھم|جھمک|جھنجوڑ|جھوٹ|جھور|جھوک|جھول|جھومنا|جواؤ|جوجھ|جوڑ|جی|چھپ|چھڈ|چونک|چبھ|چپا|چٹ|چرا|چراؤ|چڑ|چس|چکوا|چگ|چم|چ|چنڈ|چنگھ|چھپاو|چپک|چپکاؤ|چتر|چتاؤ|چتھ|چٹک|چر|چڑاؤ|چلاؤ|چمڑنا|چننا|چھڑ|چار|چاڑھ|چا|چاہو|چاہید|چاو|چاؤ|چب|چبک|چپکاو|چروا|چڑھ|چسک|چکھ|چل|چمڑ|چمک|چہک|چھڈاؤ|چھڑاؤ|چھڑک|چھلک|چھہ|چھڑوا|چھل|چھنک|چھاپ|چھانٹ|چھا|چھاؤ|چھب|چھپا|چھٹ|چھڑا|چھک|چھکاؤ|چھنڈ|چھ|چھوڑ|چھو|چھونک|چھوہ|چھیڑ|چھی|چوپ|چور|چوس|چوک|چیر|چیک|خرچ|خرید|دس|دڑا|دکھاؤ|دکھ|دہراؤ|دھم|دت|دھیا|دب|دباؤ|دبک|دبوچ|دڑھک|دفناؤ|دکھال|دلا|دہاڑ|دھکھ|دھل|دھواؤ|دھار|دھاڑ|دھا|دھر|دھڑک|دھس|دھک|دھکیل|دھمکا|دھو|دھوڑ|دھوہ|دی|دیکھ|ڈب|ڈسک|ڈک|ڈلھ|ڈنگ|ڈھک|ڈھونڈ|ڈگ|ڈاہ|ڈپھ|ڈٹ|ڈٹھ|ڈر|ڈس|ڈنگاؤ|ڈنگنا|ڈنگی|ڈہنا|ڈھلک|ڈھا|ڈھال|ڈھالنا|ڈھاہ|ڈھاو|ڈھل|ڈھ|ڈھہ|ڈھو|ڈھی|ڈوب|ڈول|ڈولھ|ڈیگ|رجھ|رجھاؤ|رڑھ|رس|رش|رک|رل|رمک|رنھ|رو|رڑک|رنگ|رہ|رٹ|رج|رچ|رڑ|رڑو|رگڑ|رم|رند|روک|رول|ریج|رینگ|سد|سٹ|سج|سجھ|سدھار|سک|سلجھ|سلگ|سنگھ|س|سسک|سکھ|سمٹ|سمر|سنج|سیو|سادھ|ساڑ|سامبھ|ستا|سراہ|سرک|سرو|سڑ|سستا|سل|سلگھ|سماؤ|سمجھا|سمیٹ|سنبھال|سنجھا|سنگڑ|سہار|سہ|سہیڑ|سوار|سوبھ|سوچ|سو|سونپ|سیک|سی|شرم|کھڑ|کھول|کتر|کٹ|کٹھ|کچل|کد|کڑھ|کسک|کھب|کھل|کھلار|کاڑھ|کت|کج|کچھ|کس|کمب|کہ|کھبھ|کھٹ|کھرچ|کھرک|کھچ|کھڈ|کھس|کھلر|کھا|کھپ|کھٹک|کھر|کھڑک|کھڑھ|کھسک|کھنگال|کھنگھ|کھہ|کھو|کھوج|کھوہ|کھیڈ|کوس|کیہ|گھل|گڈ|گزر|گم|گنج|گند|گھٹ|گھس|گھم|گ|گنواؤ|گا|گل|گاہ|گج|گد|گرج|گرہ|گڑ|گنڈھ|گہ|گھور|گھما|گھر|گھبرا|گھرک|گھڑ|گھسیٹ|گھول|گھیر|گواچ|گوڈ|گور|گونج|گوہ|گیدڑ|گیر|لی|لبھ|لٹ|لجھ|لد|لپٹ|لشک|لکھ|لا|لبڑ|لب|لتاڑ|لٹدے|لٹک|لجا|لڈ|لرز|لڑ|لڑکھڑا|لڑنا|لڑی|لک|لگ|للکار|لمک|لنگھ|لہر|لہ|لوا|لوچ|لوڑ|لوس|لیٹ|مٹھ|مچ|مچھ|مڑ|مسکرا|مشک|مکر|مند|منڈ|موت|متھ|مٹ|مدھ|ماپ|مار|مانج|مد|مدھول|مر|مسل|منا|منگ|منگیج|مہک|موڑ|مول|مو|موہ|میٹ|میچ|میس|نس|نچڑ|نہا|نبڑ|نب|نبھ|نپٹ|نکل|نکھر|نگل|ناپ|ناچ|نبیڑ|نپ|نتار|نٹھ|نچ|نچنا|نچوڑ|نکھڑ|نگ|نواز|ہڑ|ہس|ہک|ہل|ہار|ہٹ|ہر|ہڑپ|ہنڈ|ہو|ہونا|ہونجھ|ہونک|ھار|ھاک|ھٹ|ھرا|ھس|ھوٹ|وس|وچر|وچل|وچھڑ|وچھ|وڈنا|وڈھ|ورچا|ور|وک|وکھ|وگڑ|ولک|واڑ|وانگ|واہ|وج|وچ|ودھ|ورت|وسار|وصول|وکھر|وگ|ول|ونج|ونڈ|ون|وہ|ویچ|ویکھ|ویل|ویھ|یرک|ودھوا|ودھدا|ودھوائو|ودھو|ودھیو|ودھنی|ودھانی|ودھاں|ودھیے|ودھایے|ودھے|ودھیاں|ودھی|ودھاندے|ودھاندی|ودھاندا|ودھاندیاں|ودھواندے|ودھواندی|ودھواندا|ودھواندیاں|ودھوائی|ودھوایے|ودھوایاں|ودھان|ودھوان|ودھواون|اٹھ|اٹھدے|اٹھدی|اٹھدیاں|اٹھیا|اٹھن|اٹھنا|اٹھا|اٹھوا|اٹھدا|اٹھوائو|اٹھو|اٹھیو|اٹھنی|اٹھانی|اٹھاں|اٹھیے|اٹھایے|اٹھے|اٹھیاں|اٹھی|اٹھاندے|اٹھاندی|اٹھاندا|اٹھاندیاں|اٹھواندے|اٹھواندی|اٹھواندا|اٹھواندیاں|اٹھوائی|اٹھوایے|اٹھوایاں|اٹھان|اٹھوان|اٹھواون|اڈ|اڈدے|اڈدی|اڈدیاں|اڈیا|اڈن|اڈنا|اڈا|اڈوا|اڈدا|اڈوائو|اڈو|اڈیو|اڈنی|اڈانی|اڈاں|اڈیے|اڈایے|اڈے|اڈیاں|اڈی|اڈاندے|اڈاندی|اڈاندا|اڈاندیاں|اڈواندے|اڈواندی|اڈواندا|اڈواندیاں|اڈوائی|اڈوایے|اڈوایاں|اڈان|اڈوان|اڈواون|آ|آدے|آدی|آدیاں|آیا|آن|آنا|آ|آوا|آدا|آوائو|آو|آیو|آنی|آں|آیے|آیے|آے|آیاں|آی|آندے|آندی|آندا|آندیاں|آواندے|آواندی|آواندا|آواندیاں|آوائی|آوایے|آوایاں|آن|آوان|آواون'
+
+    # Tag each occurrence of the specific words in the sentence
+    tagged_sentence = re.sub(rf'\b({words_to_tag})\b', r'\1_(VB)', sentence)
+    
+    return tagged_sentence
+
+
+# Define the function to tag Analytical Negation
+def tag_analytical_negation(sentence):
+    analytical_negation_pattern = re.compile(r'(نہیں|نہ|نا)\s+(\S+)', re.UNICODE)
+    matches = analytical_negation_pattern.finditer(sentence)
+    for match in matches:
+        if ' ' + match.group(2) + ' ' in sentence:
+            sentence = sentence.replace(' ' + match.group(2) + ' ', f' (xxO)_{match.group(2)} ')
+    return sentence
+
+# Function to mark split auxiliary structures
+def mark_split_auxiliary(sentence):
+    # Define Urdu split auxiliary pattern (lexical category between verb and auxiliary)
+    split_auxiliary_pattern = r'\b(\S+)\s+(.+)\s+(\S+)\b'
+    
+    # Applying regex pattern to match split auxiliary structures
+    match = re.search(split_auxiliary_pattern, sentence)
+    if match:
+        # Marking the split auxiliary structure
+        marked_sentence = re.sub(split_auxiliary_pattern, r'\1_\2_\3_(SPAU)', sentence)
+        return marked_sentence
+    else:
+        return sentence
+    
+# Function to detect synthetic negation
+def detect_synthetic_negation(sentence):
+    synthetic_negation_patterns = [
+        r'\b(نہ\sکوئی\sاور)\b', r'\b(نہ\sکوئی\sرہ)\b',
+        r'\b(نہ\sکوئی\sای)\b', r'\b(نہ\sکوئی\sتھا)\b',
+        r'\b(نہ\sکوئی\sخ)\b', r'\b(نہ\sکوئی\sچ)\b',
+        r'\b(نہ\sکوئی\sنہیں)\b', r'\b(نہ\sکوئی\sکیہیا)\b'
+    ]
+    
+    for pattern in synthetic_negation_patterns:
+        if re.search(pattern, sentence):
+            return re.sub(pattern, r'\1_(SYNE)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+
+# Function to detect tags based on rules
+def detect_conditional_adverbial(sentence):
+    # Rule for detecting 'جدوں تک' and 'جے' as Conditional Adverbial Subordinators (COND)
+    cond_tags = []
+    
+    # Detect 'جدوں تک'
+    if 'جدوں تک' in sentence:
+        sentence = sentence.replace('جدوں تک', 'جدوں تک_(COND)')
+    
+    # Detect 'جے' with exceptions
+    words = sentence.split()
+    for i, word in enumerate(words):
+        if word == 'جے':
+            if i > 0 and words[i-1] == 'کیوں':
+                continue  # Skip 'جے' when preceded by 'کیوں'
+            if i > 0 and re.search(r'\wجے$', words[i-1]):
+                continue  # Skip 'جے' when directly preceded by any morpheme without space
+            sentence = sentence.replace('جے', 'جے_(COND)', 1)
+    
+    return sentence
+
+# Function to check for that deletion (THATD)
+def check_that_deletion(sentence):
+    that_deletion_patterns = [
+        r'\bیہ\b[\s\w]+\bجو\b[\s\w]+\bسے\b', r'\bیہ\b[\س\و]+\بکہ\b[\س\و]+\بنے\b',  # Pattern examples for "that deletion" structures
+        r'\bجو\b[\س\و]+\بکہ\b[\س\و]+\بگیا\b'
+    ]
+    
+    for thatd_pattern in that_deletion_patterns:
+        if re.search(thatd_pattern, sentence):
+            return re.sub(thatd_pattern, r'\گ<0>_(THATD)', sentence)
+    
+    return None  # Return None for sentences that do not match
+
+
+
+# Define the list of indefinite pronouns
+indefinite_pronouns = [
+    "کوئی وی", "کوئی نہیں", "کجھ وی", "ہر کوئی", "سب کجھ", 
+    "کدے نہیں", "کجھ نہیں", "کوئی اک", "کوئی"
+]
+
+# Function to tag indefinite pronouns
+def tag_indefinite_pronouns(text):
+    for pronoun in indefinite_pronouns:
+        text = re.sub(r'\b' + re.escape(pronoun) + r'\b', f'{pronoun}_(INPR)', text)
+    return text
+
+
+# Define the list of other adverbial subordinates
+other_adverbial_subordinates = [
+    "جدوں تک", "جنی جلدی", "اس حد تک کہ", "جنا کہ", "جس دے ولوں"
+]
+
+# Function to tag other adverbial subordinates
+def tag_other_adverbial_subordinates(text):
+    for subordinate in other_adverbial_subordinates:
+        text = re.sub(r'\b' + re.escape(subordinate) + r'\b', f'{subordinate}_(OSUB)', text)
+    return text
+
+# Define the list of amplifiers
+amplifiers = [
+    "مکمل", "بے حد", "پوری طرح", "انتہائی", "بہت زیادہ", "بلکل صحیح", "زور نال", "بہت"
+]
+
+# Function to tag amplifiers
+def tag_amplifiers(text):
+    for amplifier in amplifiers:
+        text = re.sub(r'\b' + re.escape(amplifier) + r'\b', f'{amplifier}_(AMP)', text)
+    return text
+
+
+def tag_attributive_adjectives(text):
+    # Define a pattern to match Urdu words (assuming they are in the text)
+    urdu_word_pattern = r'[آ-ی]+'
+
+    # Compile a regex pattern to find attributive adjective structures
+    pattern = re.compile(fr'({urdu_word_pattern}) (\1)')
+
+    # Use finditer to locate all matches in the text
+    matches = pattern.finditer(text)
+
+    # Initialize a list to store modified segments of text
+    segments = []
+    last_end = 0  # Track the end position of the last match
+
+    # Iterate through matches and build the tagged text
+    for match in matches:
+        start, end = match.span()
+        segments.append(text[last_end:start] + f'{match.group(1)} {match.group(2)}_(JJ)')
+        last_end = end
+
+    # Append any remaining text after the last match
+    segments.append(text[last_end:])
+
+    # Combine all segments to form the final tagged text
+    tagged_text = ''.join(segments)
+
+    return tagged_text
+
+
+def tag_postpositional_phrases(text):
+    # Define a pattern to match Urdu words (assuming they are in the text)
+    urdu_word_pattern = r'[آ-ی]+'
+
+    # List of postpositional phrases
+    postpositional_phrases = [
+        'دے', 'نال', 'توں', 'لئی', 'وچ', 'اچ', 'نوں', 'تاں'
+    ]
+
+    # Compile a regex pattern to find postpositional phrases
+    pattern = re.compile(fr'({urdu_word_pattern})\s+({"|".join(postpositional_phrases)})\b')
+
+    # Use finditer to locate all matches in the text
+    matches = pattern.finditer(text)
+
+    # Initialize a list to store modified segments of text
+    segments = []
+    last_end = 0  # Track the end position of the last match
+
+    # Iterate through matches and build the tagged text
+    for match in matches:
+        start, end = match.span()
+        segments.append(text[last_end:start] + f'{match.group(1)} {match.group(2)}_(PIN)')
+        last_end = end
+
+    # Append any remaining text after the last match
+    segments.append(text[last_end:])
+
+    # Combine all segments to form the final tagged text
+    tagged_text = ''.join(segments)
+    return tagged_text
+
+
+def tag_present_participle(text):
+    # Define patterns for present participle suffixes
+    suffixes = ["دا ہویا", "دی ہوئی", "دے ہویا", "دیاں ہویاں", "ندا ہویا"]
+    
+    # Combine suffixes into a single regex pattern
+    suffix_pattern = "|".join(suffixes)
+    
+    # Define a pattern to match Urdu words (assuming they are in the text)
+    urdu_word_pattern = r'[آ-ی]+'
+    
+    # Compile a regex pattern to find present participle constructions
+    # Structure 1: Object (urdu_word_pattern) + Main Verb (urdu_word_pattern) + Suffix (suffix_pattern)
+    pattern1 = re.compile(fr'({urdu_word_pattern})\s+({urdu_word_pattern})\s+({suffix_pattern})')
+    
+    # Structure 2: Subject/Object (urdu_word_pattern) + Suffix "ندا ہویا"
+    pattern2 = re.compile(fr'({urdu_word_pattern})\s+(ندا ہویا)')
+
+    # Use finditer to locate all matches in the text
+    matches1 = pattern1.finditer(text)
+    matches2 = pattern2.finditer(text)
+
+    # Initialize a list to store modified segments of text
+    segments = []
+    last_end = 0  # Track the end position of the last match
+
+    # Iterate through matches of the first pattern and build the tagged text
+    for match in matches1:
+        start, end = match.span()
+        segments.append(text[last_end:start] + f'{match.group(1)} {match.group(2)} {match.group(3)}_(PRESP)')
+        last_end = end
+
+    # Append any remaining text after the last match of pattern1
+    segments.append(text[last_end:])
+    text = ''.join(segments)  # Update the text
+
+    # Reset segments and last_end for the second pattern
+    segments = []
+    last_end = 0
+
+    # Iterate through matches of the second pattern and build the tagged text
+    for match in matches2:
+        start, end = match.span()
+        segments.append(text[last_end:start] + f'{match.group(1)} {match.group(2)}_(PRESP)')
+        last_end = end
+
+    # Append any remaining text after the last match of pattern2
+    segments.append(text[last_end:])
+    
+    # Combine all segments to form the final tagged text
+    tagged_text = ''.join(segments)
+
+    return tagged_text
+
+def tag_past_participle(text):
+    # Define suffixes for past participle
+    suffixes = ["یا", "تا"]
+
+    # Define auxiliary patterns
+    auxiliaries = ["ہویا", "گیا", "سی", "نے"]
+
+    # Combine suffixes into a single regex pattern
+    suffix_pattern = "|".join(suffixes)
+
+    # Define a pattern to match Urdu words (assuming they are in the text)
+    urdu_word_pattern = r'[آ-ی]+'
+
+    # Compile a regex pattern to find past participle constructions
+    # Structure 1: Root Verb (urdu_word_pattern) + Suffix (suffix_pattern) + "ہویا" not followed by a past auxiliary
+    pattern1 = re.compile(fr'({urdu_word_pattern})({suffix_pattern})\s+ہویا(?!\s+({"|".join(auxiliaries)}))')
+
+    # Structure 2: "یا" follows "گیا"
+    pattern2 = re.compile(fr'گیا\s+({urdu_word_pattern})یا')
+
+    # Structure 3: "یا" follows an auxiliary
+    pattern3 = re.compile(fr'({"|".join(auxiliaries)})\s+({urdu_word_pattern})یا')
+
+    # Use finditer to locate all matches in the text
+    matches1 = pattern1.finditer(text)
+    matches2 = pattern2.finditer(text)
+    matches3 = pattern3.finditer(text)
+
+    # Initialize a list to store modified segments of text
+    segments = []
+    last_end = 0  # Track the end position of the last match
+
+    # Function to replace matches with tagged text
+    def replace_matches(matches, text, tag):
+        segments = []
+        last_end = 0
+        for match in matches:
+            start, end = match.span()
+            segments.append(text[last_end:start] + match.group() + tag)
+            last_end = end
+        segments.append(text[last_end:])
+        return ''.join(segments)
+
+    # Tag matches for all patterns
+    text = replace_matches(matches1, text, '_(PASTP)')
+    text = replace_matches(matches2, text, '_(PASTP)')
+    text = replace_matches(matches3, text, '_(PASTP)')
+
+    return text
+
+
+def tag_pied_piping_relative_clauses(text):
+    # Define the pattern for Urdu words
+    urdu_word_pattern = r'[آ-ی]+'
+    
+    # Define the WH relative clause words
+    wh_relative_clauses = ["جس", "جنہاں"]
+    
+    # Define the postpositions
+    postpositions = ["دے", "نال", "توں", "لئی", "وچ", "اچ", "نوں", "تاں"]
+
+    # Combine WH relative clauses and postpositions into regex patterns
+    wh_relative_clause_pattern = "|".join(wh_relative_clauses)
+    postposition_pattern = "|".join(postpositions)
+    
+    # Define the pattern for structure 1
+    pattern1 = re.compile(fr'({urdu_word_pattern})\s+({postposition_pattern})\s+({wh_relative_clause_pattern})')
+
+    # Define the pattern for structure 2
+    pattern2 = re.compile(fr'({urdu_word_pattern})\s+({urdu_word_pattern})\s+({wh_relative_clause_pattern})')
+
+    # Function to replace matches with tagged text
+    def replace_matches(pattern, text, tag):
+        matches = pattern.finditer(text)
+        segments = []
+        last_end = 0
+        for match in matches:
+            start, end = match.span()
+            segments.append(text[last_end:start] + match.group() + tag)
+            last_end = end
+        segments.append(text[last_end:])
+        return ''.join(segments)
+
+    # Tag matches for both patterns
+    text = replace_matches(pattern1, text, '_(PIRE)')
+    text = replace_matches(pattern2, text, '_(PIRE)')
+
+    return text
+
+def tag_independent_clause_coordinators(text):
+    # Define Urdu word pattern
+    urdu_word_pattern = r'[آ-ی]+'
+
+    # Define the independent clause coordinators
+    andc_words = {
+        "تے": [
+            (r'(auxiliary)\s+(adverb|adjective|noun|pronoun|verb)', '_(ANDC)'),
+            (r'(verb)\s+(noun)', '_(ANDC)'),
+            (r'complete\s+clause\s+that\s+ends\s+on\s+noun\s+(adjective)', '_(ANDC)'),
+            (r'(noun)\s+(noun)', '_(ANDC)')
+        ],
+        "لیکن": r'(.*?)',  # Will be tagged in the entire text
+        "نہ ہی": r'(.*?)',  # Will be tagged in the entire text
+        "پر": r'(.*?)',  # Will be tagged in the entire text
+        "اجے تک": [
+            (r'کہ\s+.*?اجے تک\s+.*?کہ', '_(ANDC)'),
+            (r'اجے تک\s+.*?\?', '_(ANDC)'),
+            (r'اجے تک\s+.*?(نہیں|نئی)', '_(ANDC)')
+        ],
+        "اس لئی": r'(.*?)',  # Will be tagged in the entire text
+        "تاں": [
+            (r'(verb)\s+(noun|pronoun|verb)', '_(ANDC)')
+        ]
+    }
+
+    def replace_matches(pattern, text, tag):
+        matches = pattern.finditer(text)
+        segments = []
+        last_end = 0
+        for match in matches:
+            start, end = match.span()
+            segments.append(text[last_end:start] + match.group() + tag)
+            last_end = end
+        segments.append(text[last_end:])
+        return ''.join(segments)
+
+    # Iterate through the independent clause coordinators
+    for word, rules in andc_words.items():
+        if isinstance(rules, list):
+            for rule, tag in rules:
+                pattern = re.compile(rule.replace('auxiliary', urdu_word_pattern).replace('adverb', urdu_word_pattern).replace('adjective', urdu_word_pattern).replace('noun', urdu_word_pattern).replace('pronoun', urdu_word_pattern).replace('verb', urdu_word_pattern))
+                text = replace_matches(pattern, text, tag)
+        else:
+            pattern = re.compile(rules.replace('.*?', urdu_word_pattern))
+            text = replace_matches(pattern, text, '_(ANDC)')
+    
+    return text
